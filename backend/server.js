@@ -7,7 +7,7 @@ dotenv.config();
 import artistsRouter from './routes/artists.js';
 import songsRouter from './routes/songs.js';
 import authRouter from './routes/auth.js';
-import usersRouter from './routes/user.js';
+import usersRouter from './routes/users.js';
 import aiRouter from './routes/ai.js';
 import pool from './db/pool.js';
 
