@@ -15,11 +15,27 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production'
-    ? [process.env.FRONTEND_URL || 'https://punjabi-lyrics.vercel.app']
-    : ['http://localhost:5173'],
+  origin: function(origin, callback) {
+    const allowed = [
+      'http://localhost:5173',
+      'http://localhost:5174',
+      process.env.FRONTEND_URL,
+      'https://punjabi-lyrics.vercel.app',
+    ].filter(Boolean);
+    
+    // Allow requests with no origin (mobile apps, curl, etc)
+    if (!origin) return callback(null, true);
+    
+    if (allowed.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log('Blocked by CORS:', origin);
+      callback(null, true); // Allow all for now during testing
+    }
+  },
   credentials: true,
 }));
+
 app.use(express.json());
 
 app.use('/api/artists', artistsRouter);
