@@ -1,8 +1,7 @@
-// src/utils/api.js
-const BASE = '/api';
+const BASE = import.meta.env.VITE_API_URL || '/api';
 
 export async function apiFetch(path, options = {}) {
-const token = localStorage.getItem('admin_token') || localStorage.getItem('user_token');
+  const token = localStorage.getItem('admin_token');
   const res = await fetch(`${BASE}${path}`, {
     ...options,
     headers: {
@@ -18,7 +17,6 @@ const token = localStorage.getItem('admin_token') || localStorage.getItem('user_
   return res.json();
 }
 
-// Generate a stable session ID for likes
 export function getSessionId() {
   let sid = localStorage.getItem('session_id');
   if (!sid) {
@@ -28,7 +26,6 @@ export function getSessionId() {
   return sid;
 }
 
-// Slug helper
 export function slugify(str) {
   return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 }
