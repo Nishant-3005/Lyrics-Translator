@@ -49,20 +49,7 @@ app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 // Auto setup database on first deploy
 async function setupDatabase() {
   try {
-    // Check if tables already exist
-    const check = await pool.query(
-      `SELECT EXISTS (
-        SELECT FROM information_schema.tables 
-        WHERE table_name = 'artists'
-      )`
-    );
-
-    if (check.rows[0].exists) {
-      console.log('✅ Database already set up');
-      return;
-    }
-
-    console.log('🔧 First deploy detected - setting up database...');
+    console.log('🔧 Setting up database...');
 
     await pool.query(`
       CREATE TABLE IF NOT EXISTS admins (
@@ -130,7 +117,6 @@ async function setupDatabase() {
       CREATE INDEX IF NOT EXISTS idx_lyrics_song_id ON lyrics(song_id);
     `);
 
-    // Create the view
     await pool.query(`
       CREATE OR REPLACE VIEW songs_with_artists AS
       SELECT 
@@ -147,7 +133,6 @@ async function setupDatabase() {
       GROUP BY s.id, a.id;
     `);
 
-    // Create admin account
     const bcrypt = await import('bcryptjs');
     const adminHash = await bcrypt.default.hash(
       process.env.ADMIN_PASSWORD || 'admin123', 10
@@ -168,5 +153,6 @@ async function setupDatabase() {
 
 app.listen(PORT, async () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
+  console.log(`   DB: ${process.env.DATABASE_URL?.split('@')[1] || 'not connected'}`);
   await setupDatabase();
 });
